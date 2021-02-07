@@ -17,6 +17,7 @@ public class CharacterMovement : MonoBehaviour
     // Rigidbody variables
     [SerializeField] private float m_JumpForce;
     private Rigidbody2D m_Rigidbody;
+    private bool isJumping;
 
     // Ground Check variables
     [SerializeField] private LayerMask m_WhatIsGround;
@@ -29,6 +30,8 @@ public class CharacterMovement : MonoBehaviour
 
     private void Awake()
     {
+        isJumping = false;
+
         m_Rigidbody = GetComponent<Rigidbody2D>();
 
         // Obtain ground check components and store in list
@@ -51,12 +54,12 @@ public class CharacterMovement : MonoBehaviour
     private void FixedUpdate()
     {
         CheckGrounded();
+        Movement();
     }
 
     void Update()
     {
         HandleInput();
-        Movement();
     }
 
     /// <summary>
@@ -66,6 +69,11 @@ public class CharacterMovement : MonoBehaviour
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         isMoving = horizontal != 0;
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            isJumping = true;
+        }
 
         inputVector = new Vector2(horizontal, 0f);
 
@@ -77,9 +85,15 @@ public class CharacterMovement : MonoBehaviour
     /// </summary>
     void Movement()
     {
+        if (isGrounded && isJumping)
+        {
+            m_Rigidbody.AddForce(new Vector2(0f, m_JumpForce), ForceMode2D.Impulse);
+            isJumping = false;
+        }
+
         //transform.position += new Vector3(inputVector.x, 0f, 0f) * m_Speed * Time.deltaTime;
-        //transform.Translate(inputVector * m_Speed * Time.deltaTime);
-        m_Rigidbody.velocity = Vector2.SmoothDamp(m_Rigidbody.velocity, inputVector, ref smoothMoveVelocity, 0.15f);
+        transform.Translate(inputVector * m_Speed * Time.deltaTime);
+        //m_Rigidbody.velocity = Vector2.SmoothDamp(m_Rigidbody.velocity, inputVector, ref smoothMoveVelocity, 0.15f);
         FaceDirection();
     }
 
