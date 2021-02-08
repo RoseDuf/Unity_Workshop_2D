@@ -802,8 +802,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00102fc56a15ad549a3f9480167e9b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Projectile: {fileID: 3564304383436019633, guid: 57d0b6022de31f649885e83a9598b1e2, type: 3}
   m_Speed: 1
-  m_JumpForce: 5
+  m_JumpForce: 6
   m_WhatIsGround:
     serializedVersion: 2
     m_Bits: 256
@@ -822,7 +823,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 2
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -934,7 +935,7 @@ GameObject:
   - component: {fileID: 1949322563}
   m_Layer: 8
   m_Name: Tilemap
-  m_TagString: Untagged
+  m_TagString: ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

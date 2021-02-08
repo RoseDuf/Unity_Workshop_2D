@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterMovement : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
+    // Shooting variables
+    [SerializeField] private GameObject m_Projectile;
+    private bool isShooting;
+
     // Movement variables
     [SerializeField] private float m_Speed;
 
     private Vector2 inputVector;
+    private Vector2 directionVector;
     private Vector2 moveAmount;
     private Vector2 smoothMoveVelocity;
     private Vector2 initialScale;
@@ -25,13 +30,15 @@ public class CharacterMovement : MonoBehaviour
     private List<ColliderCheck> m_GroundCheckList;
     private bool isGrounded;
 
+    // Life variables
+    public int lifeCounter { get; set; }
+    public bool isHurt { get; set; }
+
     // Animation variables
     private Animator m_Animator;
 
     private void Awake()
     {
-        isJumping = false;
-
         m_Rigidbody = GetComponent<Rigidbody2D>();
 
         // Obtain ground check components and store in list
@@ -45,7 +52,14 @@ public class CharacterMovement : MonoBehaviour
 
     void Start()
     {
+        isShooting = false;
+
+        isJumping = false;
+
+        isHurt = false;
+
         initialScale = transform.localScale;
+        directionVector = new Vector2(transform.position.x/transform.position.x, 0);
         isMoving = false;
 
         m_Animator = GetComponent<Animator>();
@@ -70,9 +84,19 @@ public class CharacterMovement : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         isMoving = horizontal != 0;
 
+        if (isMoving)
+        {
+            directionVector = new Vector2(horizontal, 0);
+        }
+
         if (Input.GetButtonDown("Jump"))
         {
             isJumping = true;
+        }
+
+        if (Input.GetButtonDown("Fire3"))
+        {
+            Shoot();
         }
 
         inputVector = new Vector2(horizontal, 0f);
@@ -122,5 +146,21 @@ public class CharacterMovement : MonoBehaviour
             }
         }
         isGrounded = false;
+    }
+
+    private void Shoot()
+    {
+        GameObject projectile = Instantiate(m_Projectile, transform.position, m_Projectile.transform.rotation) as GameObject;
+        projectile.GetComponent<Projectile>().Shoot(directionVector);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.tag == "enemy")
+        {
+            print(lifeCounter);
+            lifeCounter -= 1;
+            isHurt = true;
+        }
     }
 }
