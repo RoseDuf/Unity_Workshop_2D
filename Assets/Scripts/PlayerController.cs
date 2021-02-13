@@ -154,11 +154,10 @@ public class PlayerController : MonoBehaviour
         projectile.GetComponent<Projectile>().Shoot(directionVector);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.tag == "enemy")
         {
-            print(lifeCounter);
             lifeCounter -= 1;
             isHurt = true;
         }

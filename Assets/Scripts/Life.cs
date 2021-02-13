@@ -5,23 +5,26 @@ using UnityEngine.UI;
 
 public class Life : MonoBehaviour
 {
-    [SerializeField] private Sprite m_FullHeart;
-    [SerializeField] private Sprite m_EmptyHeart;
+    [SerializeField] private Sprite m_FullHeartSprite;
+    [SerializeField] private Sprite m_EmptyHeartSprite;
 
-    private List<Transform> m_Hearts;
-    private int m_NumberOfHearts;
+    [SerializeField] private GameObject m_HeartPrefab;
+    [SerializeField] private int m_NumberOfHearts;
+    private List<GameObject> m_HeartsList;
 
     PlayerController player;
 
     private void Start()
     {
+        m_HeartsList = new List<GameObject>();
         player = GameObject.FindObjectOfType<PlayerController>();
         player.lifeCounter = m_NumberOfHearts;
-
-        foreach (Transform heart in transform)
+        
+        for(int i = 0; i<m_NumberOfHearts; i++)
         {
-            heart.GetComponent<Image>().sprite = m_FullHeart;
-            m_Hearts.Add(heart);
+            GameObject newHeart = Instantiate(m_HeartPrefab, transform) as GameObject;
+            newHeart.GetComponent<Image>().sprite = m_FullHeartSprite;
+            m_HeartsList.Add(newHeart);
         }
     }
 
@@ -29,7 +32,7 @@ public class Life : MonoBehaviour
     {
         if (player.isHurt)
         {
-            m_Hearts[player.lifeCounter].GetComponent<Image>().sprite = m_EmptyHeart;
+            m_HeartsList[player.lifeCounter].GetComponent<Image>().sprite = m_EmptyHeartSprite;
         }
     }
 
