@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -73,6 +74,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        GameOver();
         HandleInput();
         Animate();
     }
@@ -171,6 +173,14 @@ public class PlayerController : MonoBehaviour
             m_Rigidbody.AddForce(colliderVector * m_JumpForce/2, ForceMode2D.Impulse);
             lifeCounter -= 1;
             isHurt = true;
+        }
+    }
+
+    private void GameOver()
+    {
+        if (lifeCounter <= 0)
+        {
+            SceneManager.LoadScene("GameOver");
         }
     }
 }
