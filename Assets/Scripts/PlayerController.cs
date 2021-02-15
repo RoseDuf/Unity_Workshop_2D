@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // Shooting variables
+    [Header("Shooting variables")]
     [SerializeField] private GameObject m_Projectile;
     private bool isShooting;
 
-    // Movement variables
+    [Header("Movement variables")]
     [SerializeField] private float m_Speed;
 
     private Vector2 inputVector;
@@ -19,14 +19,14 @@ public class PlayerController : MonoBehaviour
 
     private bool isMoving;
 
-    // Rigidbody variables
+    [Header("Rigidbody variables")]
     [SerializeField] private float m_JumpForce;
     private Rigidbody2D m_Rigidbody;
     private bool isJumping;
 
-    // Ground Check variables
+    [Header("Ground Check variables")] 
     [SerializeField] private LayerMask m_WhatIsGround;
-    private const float GROUND_CHECK_RADIUS = 0.1f;
+    private const float GROUND_CHECK_RADIUS = 1f;
     private List<ColliderCheck> m_GroundCheckList;
     private bool isGrounded;
 
@@ -74,6 +74,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         HandleInput();
+        Animate();
     }
 
     /// <summary>
@@ -96,12 +97,10 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetButtonDown("Fire3"))
         {
-            Shoot();
+            StartCoroutine("Shoot");
         }
 
         inputVector = new Vector2(horizontal, 0f);
-
-        moveAmount = Vector2.SmoothDamp(moveAmount, inputVector, ref smoothMoveVelocity, 0.15f);
     }
 
     /// <summary>
@@ -118,6 +117,7 @@ public class PlayerController : MonoBehaviour
         //transform.position += new Vector3(inputVector.x, 0f, 0f) * m_Speed * Time.deltaTime;
         transform.Translate(inputVector * m_Speed * Time.deltaTime);
         //m_Rigidbody.velocity = Vector2.SmoothDamp(m_Rigidbody.velocity, inputVector, ref smoothMoveVelocity, 0.15f);
+
         FaceDirection();
     }
 
@@ -148,16 +148,27 @@ public class PlayerController : MonoBehaviour
         isGrounded = false;
     }
 
-    private void Shoot()
+    private IEnumerator Shoot()
     {
+        isShooting = true;
+        yield return new WaitForSeconds(0.26f);
         GameObject projectile = Instantiate(m_Projectile, transform.position, m_Projectile.transform.rotation) as GameObject;
         projectile.GetComponent<Projectile>().Shoot(directionVector);
+    }
+
+    private void Animate()
+    {
+        m_Animator.SetBool("isWalking", isMoving);
+        m_Animator.SetBool("isShooting", isShooting);
+        isShooting = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.tag == "enemy")
         {
+            Vector2 colliderVector = (transform.position - collision.collider.transform.position).normalized;
+            m_Rigidbody.AddForce(colliderVector * m_JumpForce/2, ForceMode2D.Impulse);
             lifeCounter -= 1;
             isHurt = true;
         }
