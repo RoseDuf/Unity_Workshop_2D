@@ -27,8 +27,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("Ground Check variables")] 
     [SerializeField] private LayerMask m_WhatIsGround;
-    private const float GROUND_CHECK_RADIUS = 1f;
-    private List<ColliderCheck> m_GroundCheckList;
+    private const float GROUND_CHECK_RADIUS = 0.01f;
+    //private List<ColliderCheck> m_GroundCheckList;
+    private ColliderCheck m_GroundCheck;
     private bool isGrounded;
 
     // Life variables
@@ -43,12 +44,15 @@ public class PlayerController : MonoBehaviour
         m_Rigidbody = GetComponent<Rigidbody2D>();
 
         // Obtain ground check components and store in list
-        m_GroundCheckList = new List<ColliderCheck>();
-        ColliderCheck[] groundChecksArray = transform.GetComponentsInChildren<ColliderCheck>();
-        foreach (ColliderCheck g in groundChecksArray)
-        {
-            m_GroundCheckList.Add(g);
-        }
+
+        //m_GroundCheckList = new List<ColliderCheck>();
+        //ColliderCheck[] groundChecksArray = transform.GetComponentsInChildren<ColliderCheck>();
+        //foreach (ColliderCheck g in groundChecksArray)
+        //{
+        //    m_GroundCheckList.Add(g);
+        //}
+
+        m_GroundCheck = transform.GetComponentInChildren<ColliderCheck>();
     }
 
     void Start()
@@ -110,6 +114,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     void Movement()
     {
+        print(isGrounded);
         if (isGrounded && isJumping)
         {
             m_Rigidbody.AddForce(new Vector2(0f, m_JumpForce), ForceMode2D.Impulse);
@@ -139,14 +144,14 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void CheckGrounded()
     {
-        foreach (ColliderCheck g in m_GroundCheckList)
-        {
-            if (g.CheckCollision(GROUND_CHECK_RADIUS, m_WhatIsGround, gameObject))
+        //foreach (ColliderCheck g in m_GroundCheckList)
+        //{
+            if (m_GroundCheck.CheckCollision(GROUND_CHECK_RADIUS, m_WhatIsGround, gameObject))
             {
                 isGrounded = true;
                 return;
             }
-        }
+        //}
         isGrounded = false;
     }
 
@@ -173,6 +178,7 @@ public class PlayerController : MonoBehaviour
             m_Rigidbody.AddForce(colliderVector * m_JumpForce/2, ForceMode2D.Impulse);
             lifeCounter -= 1;
             isHurt = true;
+            GameOver();
         }
     }
 
