@@ -16,7 +16,15 @@ public class Life : MonoBehaviour
 
     private void Start()
     {
-        //TODO: Instantiat Hearts
+        m_HeartsList = new List<GameObject>();
+        //TODO: find player component
+
+        for (int i = 0; i < m_NumberOfHearts; i++)
+        {
+            GameObject newHeart = Instantiate(m_HeartPrefab, transform) as GameObject;
+            newHeart.GetComponent<Image>().sprite = m_FullHeartSprite;
+            m_HeartsList.Add(newHeart);
+        }
     }
 
     private void Update()
